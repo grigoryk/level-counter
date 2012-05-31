@@ -3,6 +3,8 @@ Level Counter
 
 This project started when I started playing Munchkin with a group of friends. We needed a good way to track levels, and I created this. Oleksiy Khmelov helped out with the graphics.
 
+It is currently [deployed on meteorjs' servers](http://munchkin.meteor.com).
+
 ![Level Counter running on PlayBook](http://dl.dropbox.com/u/113816/IMG_00000103.jpg "Level Counter running on PlayBook")
 
 Why meteorjs?
