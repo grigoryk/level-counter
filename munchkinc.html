@@ -1,0 +1,235 @@
+<head>
+  <title>Munchkin Level Counter</title>
+
+  <style>
+    body {
+      background-image: url("img/bg.png");
+      background-repeat: repeat-x repeat-y;
+    }
+    
+    h1 {
+      margin: 20px 0 0 20px;
+    }
+    
+    .game_controls {
+      margin: 25px 0 0 10px;
+    }
+    
+    .player_block {
+      margin-top: 30px;
+      margin-left: 40px;
+      width: 260px;
+    }
+    
+    .player_info {
+      text-align: center;
+      
+      width: 181px;
+      height: 186px;
+      background-image: url("img/container.png");
+      background-repeat: none;
+
+      padding: 15px 0 0 0;
+      margin-left: 5px;
+    }
+  
+    .player_info #player_name {
+      font-size: 20pt;
+    }
+    
+    .player_info img {
+      position: relative;
+      top: -40px;
+      left: -10px;
+    }
+    
+    .player_level_controls {
+      display: inline;
+      width: 67px;
+    }
+    
+    .player_level_controls #player_level {
+      height: 41px;
+      width: 65px;
+      font: Helvetica;
+      font-size: 45pt;
+      text-align: center;
+      padding-top: 25px;
+      border-left: 1px #b7b6b1 solid;
+      border-right: 1px #b7b6b1 solid;
+    }
+    
+    .player_level_controls #player_up {
+      background-image: url("img/plus.png");
+      background-position: 0px 0px;
+      width: 67px;
+      height: 67px;
+    }
+        
+    .player_level_controls #player_down {
+      background-image: url("img/minus.png");
+      width: 67px;
+      height: 68px;
+    }
+    
+    .player_level_controls #player_up:active, .player_level_controls #player_down:active {
+      background-position: 0px 67px;
+    }
+        
+    .white {
+      background-color: #fff;
+    }
+    
+    .blue {
+      background-color: #ffee32;
+    }
+    
+    .yellow {
+      background-color: #ffc40d;
+    }
+    
+    .orange {
+      background-color: #ff4800;
+    }
+    
+    .red {
+      background-color: #9d261d;
+      color: #EF6F63;
+    }
+    
+    .welcome {
+      margin: 20px;
+    }
+    
+    ul.avatar_list {
+      list-style: none;
+    }
+    
+    ul.avatar_list li {
+      display: inline;
+    }
+    
+    .selectedAvatar {
+      border: 1px #333 solid;
+    }
+    
+    .button_add, .button_rearrange {
+      background-position: 0px 0px;
+      width: 138px;
+      height: 29px;
+    }
+    
+    .button_add:active, .button_rearrange:active {
+      background-position: 0px 29px;
+    }
+    
+    .button_add {
+      background-image: url("img/addplayer.png");
+    }
+    
+    .button_rearrange {
+      background-image: url("img/rearrange.png");
+      width: 116px;
+    }
+    
+    .players {
+      margin-top: 10px;
+      margin-left: 40px;
+    }
+    
+    .modal {
+      width: 800px;
+      position: absolute;
+      left: 375px;
+    }
+  </style>
+</head>
+
+<body>
+  {{> header }}
+
+  <div id="welcome">
+    {{> welcome}}
+  </div>
+
+  <div id="game" style="display:none">
+    {{> player_list}}
+  </div>
+</body>
+
+<template name="header">
+  <div class="row">
+    <div class="span8">
+      <h1><span id="new_game">Munchkin</span> Level Counter. {{#if in_game }}Game #<a href="#{{game_id}}">{{game_id}}</a>{{/if}}</h1>
+    </div>
+    
+    {{#if in_game}}
+    <div class="span5">
+      <div class="row game_controls">
+        <div class="span1 add_player button_add"></div>
+        <div class="span1 rearrange_players button_rearrange"></div>
+      </div>
+    </div>
+    {{/if}}
+    
+  </div>
+</template>
+
+<template name="welcome">
+  <div class="welcome">
+    <a href="#{{game_id}}" class="start_game btn btn-success">Start Game</a>
+    <a href="#" class="join_game btn">Join Game</a>
+  </div>
+</template>
+
+<template name="game">
+  {{> player_list}}
+</template>
+  
+<template name="player_list">
+  <div style="display:none;" class="modal fade" id="addPlayer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Add new munchkin!</h3>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="munchkin_name" class="span3" placeholder="Munchkin's name">
+      
+      <ul class="avatar_list">
+        <li class="avatar" id="duckofdoom.png"><img class="selectedAvatar" src="img/avatars/duckofdoom.png"></li>
+        <li class="avatar" id="exgf.png"><img src="img/avatars/exgf.png"></li>
+        <li class="avatar" id="munchkin.png"><img src="img/avatars/munchkin.png"></li>
+        <li class="avatar" id="troll.png"><img src="img/avatars/troll.png"></li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <a href="#{{game_id}}" class="btn btn-success save_add">Add</a>
+    </div>
+  </div>
+    
+  <div class="row players">
+  {{#each players}}
+    {{> player_info}}
+  {{else}}
+    <div class="span5">No players yet</div>
+  {{/each}}
+  </div>
+</template>
+
+<template name="player_info">
+  <div class="span4 player_block">
+    <div class="row">
+      <div class="span1 player_level_controls">
+        <div id="player_up"></div>
+        <div id="player_level" class="{{level_colour}}">{{ level_text }}</div>
+        <div id="player_down"></div>
+      </div>
+    
+      <div class="span2 player_info">
+        <!-- <a href="#{{game_id}}?{{name}}" id="player_name">{{ name }}</a> -->
+        <span id="player_name">{{ name }}</span>
+        <div style="background-image: url('img/avatars/{{ avatar }}');width:180px;height:201px;background-position: 0px -40px"></div>
+      </div>
+    </div>
+  </div>
+</template>
